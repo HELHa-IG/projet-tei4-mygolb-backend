@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGolb", "MyGolb\MyGolb.csproj", "{1240EB83-023D-4FC5-899C-0072A41CD6A5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1240EB83-023D-4FC5-899C-0072A41CD6A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1240EB83-023D-4FC5-899C-0072A41CD6A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1240EB83-023D-4FC5-899C-0072A41CD6A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1240EB83-023D-4FC5-899C-0072A41CD6A5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1BE6C64C-398B-42C7-895D-C7E6B936BF6B}
+	EndGlobalSection
+EndGlobal
