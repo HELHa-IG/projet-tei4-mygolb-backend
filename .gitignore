@@ -8,6 +8,10 @@
 
 # Rider
 .idea
+*.db
+Media
+Migrations
+Data
 
 # User-specific files
 *.rsuser
