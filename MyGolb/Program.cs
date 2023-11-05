@@ -1,4 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using MyGolb.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<MyGolbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MyGolbContext") ?? throw new InvalidOperationException("Connection string 'MyGolbContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddCors(options =>
