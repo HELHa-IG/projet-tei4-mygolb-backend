@@ -15,7 +15,8 @@ namespace MyGolb.Data
         }
 
         public DbSet<MyGolb.Models.User> User { get; set; } = default!;
-
         public DbSet<MyGolb.Models.Interaction>? Interaction { get; set; }
+        public DbSet<MyGolb.Models.Post>? Post { get; set; }
+        public DbSet<MyGolb.Models.Comment>? Comment { get; set; }
     }
 }
