@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyGolb.Data;
+using MyGolb.Enums;
 using MyGolb.Models;
 
 namespace MyGolb.Controllers
@@ -19,10 +20,13 @@ namespace MyGolb.Controllers
     public class PostsController : ControllerBase
     {
         private readonly MyGolbContext _context;
+        private readonly string _uploadPath;
 
-        public PostsController(MyGolbContext context)
+        public PostsController(MyGolbContext context, IConfiguration configuration)
         {
             _context = context;
+            _uploadPath = configuration["UploadSettings:Path"];
+
         }
 
         // GET: api/Posts
@@ -88,16 +92,67 @@ namespace MyGolb.Controllers
         // POST: api/Posts
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Post>> PostPost(Post post)
+        public async Task<ActionResult<Post>> PostPost(IFormFile file)
         {
-          if (_context.Post == null)
+          if (_context.Post == null || file.Length == 0)
           {
               return Problem("Entity set 'MyGolbContext.Post'  is null.");
           }
-            _context.Post.Add(post);
-            await _context.SaveChangesAsync();
+          var filename = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+          var fullPath = Path.Combine(_uploadPath, filename);
+          
+          using (var stream = new FileStream(fullPath, FileMode.Create))
+          {
+              file.CopyTo(stream);
+          }
+          
+          if (_context.User == null)
+          {
+              return NotFound("There is no context");
+          }
+          
+          var userIdClaim = User.Claims.FirstOrDefault(claim => claim.Type == "id");
 
-            return CreatedAtAction("GetPost", new { id = post.Id }, post);
+          if (userIdClaim == null)
+          {
+              return BadRequest("User ID claim not found.");
+          }
+
+          long userId;
+          if (!long.TryParse(userIdClaim.Value, out userId))
+          {
+              return BadRequest("User ID claim is not a valid long.");
+          }
+          
+          var user = await _context.User.FindAsync(userId);
+
+          if (user == null)
+          {
+              return NotFound("There is no user with this ID");
+          }
+            
+          var ext = Path.GetExtension(filename).ToLower();
+
+          var type =  ext switch
+          {
+              ".jpg" or ".jpeg" or ".png" or ".gif" => PostType.Image,
+              ".mp3" or ".wav" => PostType.Audio,
+              ".mp4" or ".avi" or ".mkv" => PostType.Video,
+              _ => throw new Exception("Unsupported media type")
+          };
+            
+          var post = new Post
+          {
+              PostPath = fullPath,
+              Type = type,
+              Date = DateTime.UtcNow,
+              User = user
+          };
+          
+          _context.Post.Add(post);
+          await _context.SaveChangesAsync();
+
+          return CreatedAtAction("GetPost", new { id = post.Id }, post);
         }
 
         // DELETE: api/Posts/5

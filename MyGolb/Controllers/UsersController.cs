@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MyGolb.Data;
 using MyGolb.Models;
 
@@ -19,10 +18,12 @@ namespace MyGolb.Controllers
     public class UsersController : ControllerBase
     {
         private readonly MyGolbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public UsersController(MyGolbContext context)
+        public UsersController(MyGolbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         // GET: api/Users
@@ -120,8 +121,8 @@ namespace MyGolb.Controllers
           user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
           _context.User.Add(user);
           await _context.SaveChangesAsync();
-
-          return CreatedAtAction("GetUser", new { id = user.Id }, user);
+          var token = GenerateJwtToken(user.Username, user.Id);
+          return Ok(new { Token = token });
         }
         
         // POST: api/Users/login
@@ -141,8 +142,8 @@ namespace MyGolb.Controllers
 
             if (!BCrypt.Net.BCrypt.Verify(user.Password, userDB.Password))
                 return Unauthorized();
-
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            var token = GenerateJwtToken(userDB.Username, userDB.Id);
+            return Ok(new { Token = token });
         }
 
         // DELETE: api/Users/5
@@ -169,6 +170,28 @@ namespace MyGolb.Controllers
         private bool UserExists(long id)
         {
             return (_context.User?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+        
+        
+        private string GenerateJwtToken(string username, long userId)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, username),
+                new Claim("id", userId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var token = new JwtSecurityToken(_configuration["Jwt:Issuer"],
+                _configuration["Jwt:Audience"],
+                claims,
+                expires: DateTime.Now.AddMinutes(30),
+                signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
