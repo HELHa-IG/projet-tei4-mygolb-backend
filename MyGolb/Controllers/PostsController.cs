@@ -25,7 +25,7 @@ namespace MyGolb.Controllers
         public PostsController(MyGolbContext context, IConfiguration configuration)
         {
             _context = context;
-            _uploadPath = configuration["UploadSettings:Path"];
+            _uploadPath = configuration["UploadSettings:PostPath"];
 
         }
 

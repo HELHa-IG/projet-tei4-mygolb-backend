@@ -7,5 +7,5 @@ public enum InteractionType
     Heart,
     Crying,
     Happy,
-    WatcherChangeTypes,
+    Sad,
 }
