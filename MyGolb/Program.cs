@@ -5,7 +5,10 @@ using Microsoft.IdentityModel.Tokens;
 using MyGolb.Data;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MyGolbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MyGolbContext") ?? throw new InvalidOperationException("Connection string 'MyGolbContext' not found.")));
+    // Use this one for MS SQL Server
+    //options.UseSqlServer(builder.Configuration.GetConnectionString("MyGolbContext") ?? throw new InvalidOperationException("Connection string 'MyGolbContext' not found.")));
+    // Use this one for SQLite
+    options.UseSqlite(builder.Configuration.GetConnectionString("MyGolbContextLite") ?? throw new InvalidOperationException("Connection string 'MyGolbContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddCors(options =>
