@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MyGolb.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://localhost:8000", "https://localhost:8080");
 builder.Services.AddDbContext<MyGolbContext>(options =>
     // Use this one for MS SQL Server
     //options.UseSqlServer(builder.Configuration.GetConnectionString("MyGolbContext") ?? throw new InvalidOperationException("Connection string 'MyGolbContext' not found.")));
