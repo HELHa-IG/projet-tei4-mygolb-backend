@@ -14,7 +14,7 @@ using MyGolb.Models;
 namespace MyGolb.Controllers
 {
     [EnableCors("MyGolbPolicy")]
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CommentController : ControllerBase
@@ -145,7 +145,7 @@ namespace MyGolb.Controllers
 
             var comment = new Comment
             {
-                CommetPath = fullPath,
+                CommentPath = fullPath,
                 Type = type,
                 Date = DateTime.UtcNow,
                 User = user,

@@ -6,7 +6,7 @@ namespace MyGolb.Models;
 public class Comment
 {
     public long Id { get; set; }
-    public string? CommetPath { get; set; }
+    public string? CommentPath { get; set; }
     public CommentType Type { get; set; }
     public DateTime Date { get; set; }
     public User User { get; set; }
