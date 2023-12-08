@@ -37,7 +37,7 @@ namespace MyGolb.Controllers
           {
               return NotFound();
           }
-            return await _context.Post.ToListAsync();
+            return await _context.Post.Include(pst => pst.User).ToListAsync();
         }
 
         // GET: api/Posts/5
@@ -101,11 +101,6 @@ namespace MyGolb.Controllers
           var filename = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
           var fullPath = Path.Combine(_uploadPath, filename);
           
-          using (var stream = new FileStream(fullPath, FileMode.Create))
-          {
-              file.CopyTo(stream);
-          }
-          
           if (_context.User == null)
           {
               return NotFound("There is no context");
@@ -148,6 +143,11 @@ namespace MyGolb.Controllers
               Date = DateTime.UtcNow,
               User = user
           };
+          
+          using (var stream = new FileStream(fullPath, FileMode.Create))
+          {
+              file.CopyTo(stream);
+          }
           
           _context.Post.Add(post);
           await _context.SaveChangesAsync();
