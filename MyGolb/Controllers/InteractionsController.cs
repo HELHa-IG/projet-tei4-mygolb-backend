@@ -54,7 +54,7 @@ namespace MyGolb.Controllers
         }
         
         // GET: api/Interactions/post/5
-        [HttpGet("/post/{id}")]
+        [HttpGet("post/{id}")]
         public async Task<ActionResult<IEnumerable<Interaction>>> GetInteractionsByPostId(long id)
         {
             if (_context.Interaction == null && _context.Post == null)
@@ -66,7 +66,7 @@ namespace MyGolb.Controllers
         }
         
         // GET: api/Interactions/comment/5
-        [HttpGet("/comment/{id}")]
+        [HttpGet("comment/{id}")]
         public async Task<ActionResult<IEnumerable<Interaction>>> GetInteractionsByCommentId(long id)
         {
             if (_context.Interaction == null && _context.Comment == null)

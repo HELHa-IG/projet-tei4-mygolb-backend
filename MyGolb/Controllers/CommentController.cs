@@ -15,7 +15,7 @@ namespace MyGolb.Controllers
 {
     [EnableCors("MyGolbPolicy")]
     //[Authorize]
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class CommentController : ControllerBase
     {
@@ -58,7 +58,7 @@ namespace MyGolb.Controllers
         }
         
         // GET: api/Comment/Post/5
-        [HttpGet("/post/{id}")]
+        [HttpGet("post/{id}")]
         public async Task<ActionResult<IEnumerable<Comment>>> GetCommentsByPostId(long id)
         {
             if (_context.Comment == null && _context.Post == null)
