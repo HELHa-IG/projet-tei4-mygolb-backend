@@ -53,9 +53,21 @@ namespace MyGolb.Controllers
             return interaction;
         }
         
+        // GET: api/Interactions/post/5
+        [HttpGet("/post/{id}")]
+        public async Task<ActionResult<IEnumerable<Interaction>>> GetInteractionsByPostId(long id)
+        {
+            if (_context.Interaction == null && _context.Post == null)
+            {
+                return NotFound();
+            }
+            
+            return await _context.Interaction.Where(i => i.Post.Id == id).ToListAsync();
+        }
+        
         // GET: api/Interactions/comment/5
         [HttpGet("/comment/{id}")]
-        public async Task<ActionResult<IEnumerable<Interaction>>> GetInteractionsByPostId(long id)
+        public async Task<ActionResult<IEnumerable<Interaction>>> GetInteractionsByCommentId(long id)
         {
             if (_context.Interaction == null && _context.Comment == null)
             {
