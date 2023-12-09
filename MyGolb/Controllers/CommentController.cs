@@ -56,6 +56,18 @@ namespace MyGolb.Controllers
 
             return comment;
         }
+        
+        // GET: api/Comment/Post/5
+        [HttpGet("/post/{id}")]
+        public async Task<ActionResult<IEnumerable<Comment>>> GetCommentsByPostId(long id)
+        {
+            if (_context.Comment == null && _context.Post == null)
+            {
+                return NotFound();
+            }
+            
+            return await _context.Comment.Where(c => c.Post.Id == id).ToListAsync();
+        }
 
         // PUT: api/Comment/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

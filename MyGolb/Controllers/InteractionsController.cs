@@ -52,6 +52,18 @@ namespace MyGolb.Controllers
 
             return interaction;
         }
+        
+        // GET: api/Interactions/comment/5
+        [HttpGet("/comment/{id}")]
+        public async Task<ActionResult<IEnumerable<Interaction>>> GetInteractionsByPostId(long id)
+        {
+            if (_context.Interaction == null && _context.Comment == null)
+            {
+                return NotFound();
+            }
+            
+            return await _context.Interaction.Where(i => i.Comment.Id == id).ToListAsync();
+        }
 
         // PUT: api/Interactions/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
