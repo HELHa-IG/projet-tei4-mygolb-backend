@@ -48,7 +48,7 @@ namespace MyGolb.Controllers
           {
               return NotFound();
           }
-            var post = await _context.Post.FindAsync(id);
+            var post = await _context.Post.Include(pst => pst.User).FirstOrDefaultAsync(p => p.Id == id);
 
             if (post == null)
             {

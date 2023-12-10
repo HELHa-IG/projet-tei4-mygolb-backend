@@ -32,7 +32,7 @@ namespace MyGolb.Controllers
           {
               return NotFound();
           }
-            return await _context.Interaction.ToListAsync();
+            return await _context.Interaction.Include(i => i.User).Include(i => i.Post).Include(i => i.Comment).ToListAsync();
         }
 
         // GET: api/Interactions/5
@@ -43,7 +43,7 @@ namespace MyGolb.Controllers
           {
               return NotFound();
           }
-            var interaction = await _context.Interaction.FindAsync(id);
+            var interaction = await _context.Interaction.Include(i => i.User).Include(i => i.Post).Include(i => i.Comment).FirstOrDefaultAsync(i => i.Id == id);
 
             if (interaction == null)
             {
@@ -62,7 +62,7 @@ namespace MyGolb.Controllers
                 return NotFound();
             }
             
-            return await _context.Interaction.Where(i => i.Post.Id == id).ToListAsync();
+            return await _context.Interaction.Include(i => i.User).Include(i => i.Post).Where(i => i.Post.Id == id).ToListAsync();
         }
         
         // GET: api/Interactions/comment/5
@@ -74,7 +74,7 @@ namespace MyGolb.Controllers
                 return NotFound();
             }
             
-            return await _context.Interaction.Where(i => i.Comment.Id == id).ToListAsync();
+            return await _context.Interaction.Include(i => i.User).Include(i => i.Post).Include(i => i.Comment).Where(i => i.Comment.Id == id).ToListAsync();
         }
 
         // PUT: api/Interactions/5

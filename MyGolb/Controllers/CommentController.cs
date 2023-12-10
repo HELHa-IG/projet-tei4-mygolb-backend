@@ -36,7 +36,7 @@ namespace MyGolb.Controllers
           {
               return NotFound();
           }
-            return await _context.Comment.ToListAsync();
+            return await _context.Comment.Include(c => c.Post).Include(c => c.User).ToListAsync();
         }
 
         // GET: api/Comment/5
@@ -47,7 +47,7 @@ namespace MyGolb.Controllers
           {
               return NotFound();
           }
-            var comment = await _context.Comment.FindAsync(id);
+            var comment = await _context.Comment.Include(c => c.Post).Include(c => c.User).FirstOrDefaultAsync(c => c.Id == id);
 
             if (comment == null)
             {
@@ -66,7 +66,7 @@ namespace MyGolb.Controllers
                 return NotFound();
             }
             
-            return await _context.Comment.Where(c => c.Post.Id == id).ToListAsync();
+            return await _context.Comment.Include(c => c.Post).Include(c => c.User).Where(c => c.Post.Id == id).ToListAsync();
         }
 
         // PUT: api/Comment/5
@@ -105,10 +105,10 @@ namespace MyGolb.Controllers
         [HttpPost]
         public async Task<ActionResult<Comment>> PostComment(long postId, IFormFile file)
         {
-          if (_context.Comment == null || file.Length == 0)
-          {
+            if (_context.Comment == null || file.Length == 0)
+            {
               return Problem("Entity set 'MyGolbContext.Comment'  is null.");
-          }
+            }
           
             var filename =  $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
             var fullPath = Path.Combine(_uploadPath, filename);
