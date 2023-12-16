@@ -17,18 +17,18 @@ namespace MyGolb.Controllers
     //[Authorize]
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class CommentController : ControllerBase
+    public class CommentsController : ControllerBase
     {
         private readonly MyGolbContext _context;
         private readonly string _uploadPath;
 
-        public CommentController(MyGolbContext context, IConfiguration configuration)
+        public CommentsController(MyGolbContext context, IConfiguration configuration)
         {
             _context = context;
             _uploadPath = configuration["UploadSettings:CommentPath"];
         }
 
-        // GET: api/Comment
+        // GET: api/Comments
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Comment>>> GetComment()
         {
@@ -39,7 +39,7 @@ namespace MyGolb.Controllers
             return await _context.Comment.Include(c => c.Post).Include(c => c.User).ToListAsync();
         }
 
-        // GET: api/Comment/5
+        // GET: api/Comments/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Comment>> GetComment(long id)
         {
@@ -57,7 +57,7 @@ namespace MyGolb.Controllers
             return comment;
         }
         
-        // GET: api/Comment/Post/5
+        // GET: api/Comments/Post/5
         [HttpGet("post/{id}")]
         public async Task<ActionResult<IEnumerable<Comment>>> GetCommentsByPostId(long id)
         {
@@ -69,7 +69,7 @@ namespace MyGolb.Controllers
             return await _context.Comment.Include(c => c.Post).Include(c => c.User).Where(c => c.Post.Id == id).ToListAsync();
         }
 
-        // PUT: api/Comment/5
+        // PUT: api/Comments/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutComment(long id, Comment comment)
@@ -100,7 +100,7 @@ namespace MyGolb.Controllers
             return NoContent();
         }
 
-        // POST: api/Comment
+        // POST: api/Comments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Comment>> PostComment(long postId, IFormFile file)
@@ -171,7 +171,7 @@ namespace MyGolb.Controllers
             return CreatedAtAction("GetComment", new { id = comment.Id }, comment);
         }
 
-        // DELETE: api/Comment/5
+        // DELETE: api/Comments/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComment(long id)
         {

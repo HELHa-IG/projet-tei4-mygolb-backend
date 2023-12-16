@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyGolb.Data;
@@ -32,17 +27,17 @@ namespace MyGolb.Controllers
           {
               return NotFound();
           }
-            return await _context.Interaction.Include(i => i.User).Include(i => i.Post).Include(i => i.Comment).ToListAsync();
+          return await _context.Interaction.Include(i => i.User).Include(i => i.Post).Include(i => i.Comment).ToListAsync();
         }
 
         // GET: api/Interactions/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Interaction>> GetInteraction(long id)
         {
-          if (_context.Interaction == null)
-          {
+            if (_context.Interaction == null)
+            {
               return NotFound();
-          }
+            }
             var interaction = await _context.Interaction.Include(i => i.User).Include(i => i.Post).Include(i => i.Comment).FirstOrDefaultAsync(i => i.Id == id);
 
             if (interaction == null)
@@ -78,7 +73,7 @@ namespace MyGolb.Controllers
         }
 
         // PUT: api/Interactions/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // To protect from over posting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutInteraction(long id, Interaction interaction)
         {
@@ -109,18 +104,71 @@ namespace MyGolb.Controllers
         }
 
         // POST: api/Interactions
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // To protect from over posting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Interaction>> PostInteraction(Interaction interaction)
+        public async Task<ActionResult<Interaction>> PostInteraction(Interaction interaction, string on, long id)
         {
-          if (_context.Interaction == null)
-          {
-              return Problem("Entity set 'MyGolbContext.Interaction'  is null.");
-          }
-            _context.Interaction.Add(interaction);
-            await _context.SaveChangesAsync();
+            if (on.Contains("post"))
+            {
+                if (_context.Interaction == null || _context.Post == null || _context.User == null)
+                {
+                    return Problem("Entity set MyGolbContext  is null.");
+                }
 
-            return CreatedAtAction("GetInteraction", new { id = interaction.Id }, interaction);
+                var userIdClaim = User.Claims.FirstOrDefault(claim => claim.Type == "id");
+                if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var userId))
+                {
+                    return Problem("An error occured");
+                }
+                
+                var user = await _context.User.FindAsync(userId);
+                var post = await _context.Post.FindAsync(id);
+                
+                if (user == null || post == null)
+                {
+                    return Problem("An error occured");
+                }
+                
+                interaction.User = user;
+                interaction.Post = post;
+                
+                _context.Interaction.Add(interaction);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetInteraction", new { id = interaction.Id }, interaction);
+            } 
+            else if (on.Contains("comment"))
+            {
+                if (_context.Interaction == null || _context.Comment == null || _context.User == null)
+                {
+                    return Problem("Entity set MyGolbContext is null.");
+                }
+                
+                var userIdClaim = User.Claims.FirstOrDefault(claim => claim.Type == "id");
+                if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var userId))
+                {
+                    return Problem("An error occured");
+                }
+                var user = await _context.User.FindAsync(userId);
+                var comment = await _context.Comment.FindAsync(id);
+                
+                if (user == null || comment == null)
+                {
+                    return Problem("An error occured");
+                }
+                
+                interaction.User = user;
+                interaction.Comment = comment;
+                
+                _context.Interaction.Add(interaction);
+                await _context.SaveChangesAsync();
+
+                return CreatedAtAction("GetInteraction", new { id = interaction.Id }, interaction);
+            }
+            else
+            {
+                return Problem("An error occured");
+            }
         }
 
         // DELETE: api/Interactions/5

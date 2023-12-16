@@ -26,8 +26,8 @@ namespace MyGolb.Data
             modelBuilder.Entity<User>()
                 .HasKey(u => u.Id);
             modelBuilder.Entity<User>()
-                .Property(u => u.Username)
-                .IsRequired();
+                .HasIndex(u => u.Username)
+                .IsUnique();
             modelBuilder.Entity<User>()
                 .Property(u => u.Password)
                 .IsRequired();
@@ -50,20 +50,28 @@ namespace MyGolb.Data
                 .HasMany(p => p.Comments)
                 .WithOne(c => c.Post)
                 .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Post>()
-                .HasMany(p => p.Interactions)
-                .WithOne(i => i.Post)
-                .OnDelete(DeleteBehavior.Cascade);
+          
 
             modelBuilder.Entity<Comment>()
                 .HasKey(c => c.Id);
-            modelBuilder.Entity<Comment>()
-                .HasMany(c => c.Interactions)
-                .WithOne(i => i.Comment)
-                .OnDelete(DeleteBehavior.Cascade);
+         
 
             modelBuilder.Entity<Interaction>()
                 .HasKey(i => i.Id);
+            
+            modelBuilder.Entity<Interaction>()
+                .HasOne(i => i.Post)
+                .WithMany(p => p.Interactions)
+                .HasForeignKey("PostId")
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false);
+
+            modelBuilder.Entity<Interaction>()
+                .HasOne(i => i.Comment)
+                .WithMany(c => c.Interactions)
+                .HasForeignKey("CommentId")
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false);
         }
     }
 }
