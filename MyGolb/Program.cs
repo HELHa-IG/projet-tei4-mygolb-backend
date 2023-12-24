@@ -59,7 +59,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("MyGolbPolicy"");
+app.UseCors("MyGolbPolicy");
 
 app.UseAuthentication();
 
